@@ -5,6 +5,8 @@ const app = express();
 const greetingsRouter = require("./router/v1/greetings.router");
 const toolsRouter = require("./router/v1/tools.router");
 const port = process.env.PORT || 3000;
+const { connectToServer } = require("./utils/dbConnects");
+const errorHandler = require("./middleware/errorHandler.middleware");
 
 app.use(cors());
 app.use(express.json());
@@ -14,12 +16,15 @@ app.use("/api/v1/greet", greetingsRouter);
 app.use("/api/v1/tools", toolsRouter);
 
 // db connected function
-async function run() {
-  try {
-  } catch (e) {
-    console.log(e);
+connectToServer((err) => {
+  if (!err) {
+    app.listen(5000, () => {
+      console.log(`Server is Running in ${port} `);
+    });
+  } else {
+    console.log(err);
   }
-}
+});
 
 app.get("/", (req, res) => {
   res.json({ data: "Hello World" });
@@ -29,9 +34,7 @@ app.all("*", (req, res) => {
   res.json({ data: "No Route Founds" });
 });
 
-app.listen(5000, () => {
-  console.log(`Server is Running in ${port} `);
-});
+app.use(errorHandler);
 
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);

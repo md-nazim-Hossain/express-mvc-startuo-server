@@ -4,11 +4,9 @@ const limiter = require("../../middleware/apiRateLimit.middleWare");
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(toolsController.getAllTools)
-  .post(limiter, toolsController.saveTool)
-  .delete(toolsController.delete);
+router.get("/", toolsController.getAllTools);
+router.delete("/:id", toolsController.delete);
 router.get("/:id", toolsController.tool);
+router.post("/save", toolsController.saveTool);
 
 module.exports = router;
